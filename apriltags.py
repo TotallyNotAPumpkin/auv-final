@@ -212,7 +212,7 @@ def getTagAngles(tags):
         r = R.from_matrix(tag.pose_R)
         r = r.as_euler('zyx', degrees=True)
         angles.append(r[1])
-        print(f"Angles: {r[1]}")
+        # print(f"Angles: {r[1]}")
     return angles
 
 
