@@ -12,7 +12,7 @@ class BlueROV:
         self.mav_connection.arducopter_arm()
         self.mav_connection.motors_armed_wait()
         self.state = "armed"
-        self.set_rc_channel(9, 1100)
+        self.set_rc_channel(9, 1500)
 
     def disarm(self):
         """Disarm the ROV, wait for confirmation"""

@@ -307,9 +307,10 @@ def main(video):
 
 
 if __name__ == "__main__":
-    vida = cv2.VideoCapture('AprilTagTest.mkv')
-    tagVideo(vida)
+    # vida = cv2.VideoCapture('AprilTagTest.mkv')
+    vida = 'AprilTagTest.mkv'
+    # tagVideo(vida)
     # writeImages(vida, 3773, 4)
     # createFeed(vida)
-    # main(vida)
+    main(vida)
     
