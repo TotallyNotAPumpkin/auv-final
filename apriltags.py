@@ -2,7 +2,7 @@ from dt_apriltags import Detector
 import cv2
 import numpy as np
 import matplotlib.pyplot as plt
-from pymavlink import mavutil
+# from pymavlink import mavutil
 import sys
 import signal
 from pid import PID
@@ -54,26 +54,26 @@ def drawTag(frame, height, width, centerY, centerX):
         print("get square")
 
         # draw the bounding box of the AprilTag detection
-        cv2.line(frame, ptA, ptB, (0, 255, 0), interfaceLine)
-        cv2.line(frame, ptB, ptC, (0, 255, 0), interfaceLine)
-        cv2.line(frame, ptC, ptD, (0, 255, 0), interfaceLine)
-        cv2.line(frame, ptD, ptA, (0, 255, 0), interfaceLine)
+        cv2.line(frame, ptA, ptB, (0, 255, 0), 1)
+        cv2.line(frame, ptB, ptC, (0, 255, 0), 1)
+        cv2.line(frame, ptC, ptD, (0, 255, 0), 1)
+        cv2.line(frame, ptD, ptA, (0, 255, 0), 1)
         print("draw square")
 
         # draw circle in center of tag
         (cX, cY) = (int(tag.center[0]), int(tag.center[1]))
-        cv2.circle(frame, (cX, cY), dotRadius, (0, 0, 255), -1)
+        cv2.circle(frame, (cX, cY), 2, (0, 0, 255), -1)
         print("drawpoing")
 
         # draws line between center and circle
-        cv2.line(frame, (cX, cY), (centerX, centerY), (255, 0, 0), interfaceLine)
-        cv2.putText(frame, f"({centerX}, {centerY + 20})", (centerX, centerY), 0, fontSize, (255, 0, 0), 3)
-        cv2.putText(frame, f"({cX}, {cY})", (cX, cY + 20), 0, fontSize, (255, 0, 0), 3)
+        cv2.line(frame, (cX, cY), (centerX, centerY), (255, 0, 0), 1)
+        cv2.putText(frame, f"({centerX}, {centerY + 20})", (centerX, centerY), 0, 0.3, (255, 0, 0), 3)
+        cv2.putText(frame, f"({cX}, {cY})", (cX, cY + 20), 0, 0.3, (255, 0, 0), 3)
         print("drawfunnyline")
 
         # draws line between center and circle
-        cv2.line(frame, (cX, cY), (cX, centerY), (255, 100, 0), interfaceLine) # center of the detected tag, then extend a line down for the vertical component
-        cv2.line(frame, (cX, cY), (centerX, cY), (255, 100, 0), interfaceLine) #center of the detected tag, then extend a line horizontal for the horizontal component
+        cv2.line(frame, (cX, cY), (cX, centerY), (255, 100, 0), 1) # center of the detected tag, then extend a line down for the vertical component
+        cv2.line(frame, (cX, cY), (centerX, cY), (255, 100, 0), 1) #center of the detected tag, then extend a line horizontal for the horizontal component
         print("moredrawfunnies")
 
         
@@ -84,15 +84,15 @@ def drawTag(frame, height, width, centerY, centerX):
         print("makevar")
         # angles = getTagAngles(tags)
 
-        cv2.putText(frame, f'Vertical Distance Percentage: {round(errorPercentY, 3)}%', vertLabel, 0, fontSize, (255, 0, 255), 3)
-        cv2.putText(frame, f'Lateral Distance Percentage: {round(errorPercentX, 3)}%', horizLabel, 0, fontSize, (255, 0, 255), 3)
+        cv2.putText(frame, f'Vertical Distance Percentage: {round(errorPercentY, 3)}%', vertLabel, 0, 0.3, (255, 0, 255), 3)
+        cv2.putText(frame, f'Lateral Distance Percentage: {round(errorPercentX, 3)}%', horizLabel, 0, 0.3, (255, 0, 255), 3)
         print("text...")
         # cv2.putText(frame, f'Angle (deg): {angles}', (0, int(centerY/2-60)), 0, fontSize, (255, 0, 255), 3)
     return frame
 
-def getTagDistance(tags):
-    distance = tags[0].pose_t
 
+def getTagDistance(tags):
+    distance = tags[0].pose_t # m
     return distance
 
 
@@ -313,4 +313,3 @@ if __name__ == "__main__":
     # writeImages(vida, 3773, 4)
     # createFeed(vida)
     main(vida)
-    

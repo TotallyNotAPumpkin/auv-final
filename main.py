@@ -14,6 +14,7 @@ from apriltags import getTag, getTagCenter, sizeF, getTagDistance, getTagAngles
 from lane_detection import detect_lanes, detect_lines
 from lane_following import recommend_angle, get_lane_center
 
+# creates detector object as variables
 cameraMatrix = np.array([1060.71, 0, 960, 0, 1060.71, 540, 0, 0, 1]).reshape((3, 3))
 camera_params = (cameraMatrix[0, 0], cameraMatrix[1, 1], cameraMatrix[0, 2], cameraMatrix[1, 2])
 at_detector = Detector(families='tag36h11',
@@ -24,16 +25,18 @@ at_detector = Detector(families='tag36h11',
                         decode_sharpening=0.25,
                         debug=0)
 
-
 # Create the video object
 video = Video()
-# Create the PID object
+
+# Create the PID objects
 pid_vertical = PID(K_p=1, K_i=0.0, K_d=-0.7, integral_limit=1)
 pid_horizontal = PID(K_p=0.7, K_i=0.0, K_d=-0.4, integral_limit=1)
 pid_forward = PID(K_p=-40, K_i=0.0, K_d=-30, integral_limit=1)
 pid_turn = PID(K_p=-0.85, K_i=0.0, K_d=-0.2, integral_limit=1)
+
 # Create the mavlink connection
 mav_comn = mavutil.mavlink_connection("udpin:0.0.0.0:14550")
+
 # Create the BlueROV object
 bluerov = BlueROV(mav_connection=mav_comn)
 
@@ -41,6 +44,7 @@ frame = None
 frame_available = Event()
 frame_available.set()
 
+# initializes power as 0
 vertical_power = 0
 lateral_power = 0
 longitudinal_power = 0
@@ -61,22 +65,25 @@ def _get_frame():
                 # TODO: Add frame processing here
                 
                 # cv2.imwrite('feed.jpg', frame)
-
+                
+                # returns frame details, tags, and tag centers
                 middle_x, middle_y, width, height = sizeF(frame)
                 tags = getTag(frame)
                 detected_tags = getTagCenter(tags)
 
+                # sets PIDs based off of apriltags
                 if len(detected_tags) != 0:
                     tagX, tagY = detected_tags[0]
                     print(detected_tags)
 
+                    # finds distance from tag in (m) - x, y and z
                     distance = getTagDistance(tags)
                     print(distance)
 
                     tagAngles = getTagAngles(tags)
                     print(tagAngles)
 
-                    # Calculate percent error from the desired middle coordinates
+                    # Calculate percent error from the desired middle coordinates (m%) -> desired - current
                     error_y = round((middle_y - tagY)/height * 100, 6)
                     error_x = round((middle_x - tagX)/width * 100, 6)
                     # error_z = distance[2][0]
@@ -101,7 +108,7 @@ def _get_frame():
                     print("Output A", yaw_power)
 
 
-
+                # in the case that apriltags are not detected -> use lanes to continue movement
                 else:
                     detectedLanes = detect_lanes(frame, detect_lines(frame, 50, 70, 3, 200, 10))
                     if len(detectedLanes) != 0:
@@ -129,7 +136,7 @@ def _get_frame():
                             
 
 
-
+                    # when total failure to find both lanes and apriltag, sit -> set to spin very very very slowly later
                     else:
                         vertical_power = 0
                         lateral_power = 0
